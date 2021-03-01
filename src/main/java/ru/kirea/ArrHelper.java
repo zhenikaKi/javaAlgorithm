@@ -24,7 +24,7 @@ public class ArrHelper {
         for (int value: arr) {
             result.add(value);
         }
-        System.out.println(String.format("Время выполнения задания 3.1: %d нс\n", System.nanoTime() - timeStart));
+        System.out.println(String.format("Время выполнения задания 3.1 (toList): %d нс", System.nanoTime() - timeStart));
         return result;
     }
     public static Collection<Integer> arrToCollection(int[] arr) {
@@ -33,7 +33,25 @@ public class ArrHelper {
         for (int value: arr) {
             result.add(value);
         }
-        System.out.println(String.format("Время выполнения задания 3.1: %d нс\n", System.nanoTime() - timeStart));
+        System.out.println(String.format("Время выполнения задания 3.1 (toCollection): %d нс", System.nanoTime() - timeStart));
         return result;
+    }
+
+    //Задание 3.2
+    public static <T> void addItem(List<T> list, T item) {
+        long timeStart = System.nanoTime();
+        list.add(item);
+        System.out.println(String.format("Время выполнения задания 3.2 (add): %d нс", System.nanoTime() - timeStart));
+    }
+    public static <T> void removeItem(List<T> list, int index) {
+        long timeStart = System.nanoTime();
+        list.remove(index);
+        System.out.println(String.format("Время выполнения задания 3.2 (remove): %d нс", System.nanoTime() - timeStart));
+    }
+    public static <T> T getItem(List<T> list, int index) {
+        long timeStart = System.nanoTime();
+        T item = list.get(index);
+        System.out.println(String.format("Время выполнения задания 3.2 (get): %d нс", System.nanoTime() - timeStart));
+        return item;
     }
 }
