@@ -42,6 +42,6 @@ public class TreeNode<T> {
 
     //задание 6.4 отображение дерева
     public void display() {
-        System.out.println(item.toString() + "{" + treeIndex + "}");
+        System.out.println(item.toString());
     }
 }
