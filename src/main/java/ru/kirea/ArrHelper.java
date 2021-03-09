@@ -54,4 +54,49 @@ public class ArrHelper {
         System.out.println(String.format("Время выполнения задания 3.2 (get): %d нс", System.nanoTime() - timeStart));
         return item;
     }
+
+    //задание 6.6 сортировка массива чисел с помощью бинарной пирамиды
+    public static void heapSort(int[] arr) {
+        long timeStart = System.nanoTime();
+        int size = arr.length;
+        for (int ind = arr.length/2; ind > 0; ind--) {
+            heapify(arr, size, ind);
+        }
+        while (size > 1) {
+            swap(arr, 0, size - 1);
+            size--;
+            heapify(arr, size, 0);
+        }
+        System.out.println(String.format("Время выполнения задания 6.6 (сортировка с бин.пирамидой): %d нс", System.nanoTime() - timeStart));
+    }
+
+    private static void heapify(int[] arr, int size, int ind) {
+        int left = left(ind);
+        int right = right(ind);
+        int largest = ind;
+        if (left < size && arr[ind] < arr[left]) {
+            largest = left;
+        }
+        if (right < size && arr[largest] < arr[right]) {
+            largest = right;
+        }
+        if (ind != largest) {
+            swap(arr, ind, largest);
+            heapify(arr, size, largest);
+        }
+    }
+
+    private static void swap(int[] arr, int ind, int largest) {
+        int tmp = arr[ind];
+        arr[ind] = arr[largest];
+        arr[largest] = tmp;
+    }
+
+    private static int right(int ind) {
+        return 2 * ind + 2;
+    }
+
+    private static int left(int ind) {
+        return 2 * ind + 1;
+    }
 }

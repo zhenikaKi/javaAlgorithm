@@ -5,7 +5,7 @@ import javafx.scene.control.TreeView;
 import java.util.*;
 
 //задание 6.2 шаблон дерева
-public class Tree<T extends TreeNodeViewable>  {
+public class Tree<T>  {
     private TreeNode<T> root;
     private Comparator<T> comparator;
 
