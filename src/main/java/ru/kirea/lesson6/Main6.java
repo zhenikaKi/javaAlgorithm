@@ -26,6 +26,7 @@ public class Main6 {
     public static void main(String[] args) {
         //в дереве будем хранить список ФИО
         Tree<Human> treeHumans = new Tree<>(Human::compareTo);
+        treeHumans.setTreeNodeViewable(Human::getShortString);
 
         /*задание 6.1: деревовидная структура дерева - компания олрифлейм со своими работниками,
           которые набирают к себе в команду других работников, а те еще других.*/
@@ -42,6 +43,10 @@ public class Main6 {
         treeHumans.insert(new Human("Зуев", "Виктор", "Викторович"));
         treeHumans.insert(new Human("Петров", "Константин"));
         treeHumans.insert(new Human("Борисов", "Николай", "Юрьевич"));
+        System.out.println();
+
+        System.out.println("Структура дерева");
+        treeHumans.visualView();
         System.out.println();
 
         //6.3
@@ -79,6 +84,10 @@ public class Main6 {
         treeHumans.symmetricView();
         System.out.println();
 
+        System.out.println("Структура дерева после удаления");
+        treeHumans.visualView();
+        System.out.println();
+
         //6.6
         int[] arr = ArrHelper.generateRandomArr(30, 50);
         int[] arr2 = Arrays.copyOf(arr, arr.length);
@@ -88,5 +97,8 @@ public class Main6 {
         ArrHelper.heapSort(arr2);
         System.out.println("Отсортированный первый массив: " + Arrays.toString(arr));
         System.out.println("Отсортированный второй массив: " + Arrays.toString(arr2));
+
+        /*задание 6.7: сбалансированная структура дерева - хранение ассоциативных массивов. Ключ такого массива - это
+          элемент дерева.*/
     }
 }

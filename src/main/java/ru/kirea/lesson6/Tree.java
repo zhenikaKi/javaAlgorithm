@@ -1,8 +1,10 @@
 package ru.kirea.lesson6;
 
-import javafx.scene.control.TreeView;
+import com.sun.xml.internal.ws.util.StringUtils;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 //задание 6.2 шаблон дерева
 public class Tree<T>  {
@@ -10,14 +12,18 @@ public class Tree<T>  {
     private Comparator<T> comparator;
 
     //для визуального вывода дерева
-    //private List<List<TreeView>> allItemsList;
     private List<List<TreeNode<T>>> allItemsListTree;
+    private TreeNodeViewable<T> treeNodeViewable;
 
     private Tree() {
     }
 
     public Tree(Comparator<T> comparator) {
         this.comparator = comparator;
+    }
+
+    public void setTreeNodeViewable(TreeNodeViewable<T> treeNodeViewable) {
+        this.treeNodeViewable = treeNodeViewable;
     }
 
     //задание 6.3 вставка
@@ -211,5 +217,195 @@ public class Tree<T>  {
 
         return successor;
     }
-//
+
+
+///////////////дополнительный вывод///////////////////////
+    //задание 6.4 * визуальное дерево
+    public void visualView() {
+        allItemsListTree = new ArrayList<>();
+        if (root != null) {
+            TreeNode<T> node = root;
+            allItemsListTree.add(Collections.singletonList(node));
+            setItemOnLevels(root, 1, 1, 1);
+        }
+
+        //получим максимальные длины значения на каждом уровне дерева и проставляем пустые места в дереве как null
+        int maxWord = 0;
+        List<Integer> maxWordInLine = new ArrayList<>();
+        for (int row0 = 0; row0 < allItemsListTree.size(); row0++) {
+            List<TreeNode<T>> itemsTree = allItemsListTree.get(row0);
+            if (itemsTree.isEmpty()) {
+                allItemsListTree.remove(row0);
+            } else {
+                int cnt = 0;
+                int itemInd;
+                int countItem = getCountItem(row0 + 1);
+                int maxWordLength = 0;
+                for (itemInd = 0; itemInd < itemsTree.size(); itemInd++) {
+                    TreeNode<T> treeView = itemsTree.get(itemInd);
+                    T item = treeView.getItem();
+                    String value = (treeNodeViewable != null ? treeNodeViewable.getValueView(item) : item.toString());
+                    cnt++;
+                    maxWordLength = Math.max(maxWordLength, value.length());
+                }
+                for (int ind = itemInd + 1; ind <= countItem; ind++) {
+                    //items.add(null);
+                    itemsTree.add(null);
+                }
+                maxWord = Math.max(maxWord, cnt);
+                allItemsListTree.set(row0, itemsTree);
+                maxWordInLine.add(row0, maxWordLength);
+            }
+        }
+
+        //делаем смещение элементов
+        for (int row = 0; row < allItemsListTree.size(); row++) {
+            if (row <  allItemsListTree.size()-1) {
+                List<TreeNode<T>> nextRow = allItemsListTree.get(row+1);
+                for (int itemIndex = allItemsListTree.get(row).size() - 1; itemIndex >= 0; itemIndex--) {
+                    TreeNode<T> itemRow = allItemsListTree.get(row).get(itemIndex);
+                    if (itemRow != null) {
+                        int childR = (itemIndex + 1) * 2 - 1;
+                        int childL = childR - 1;
+                        for (int itemIndex2 = nextRow.size() - 1; itemIndex2 >= 0; itemIndex2--) {
+                            TreeNode<T> itemRowNext = nextRow.get(itemIndex2);
+                            if (itemRowNext != null) {
+                                //нашли правый дочерний элемент, перемеаем его в "нужную" структуру дерева
+                                if (itemRow.getRightChild() != null && itemRow.getRightChild().getTreeIndex() == itemRowNext.getTreeIndex() && childR != itemIndex2) {
+                                    allItemsListTree.get(row + 1).set(childR, itemRowNext);
+                                    allItemsListTree.get(row + 1).set(itemIndex2, null);
+                                }
+
+                                //нашли левый дочерний элемент, перемеаем его в "нужную" структуру дерева
+                                if (itemRow.getLeftChild() != null && itemRow.getLeftChild().getTreeIndex() == itemRowNext.getTreeIndex()) {
+                                    if (childL != itemIndex2) {
+                                        allItemsListTree.get(row + 1).set(childL, itemRowNext);
+                                        allItemsListTree.get(row + 1).set(itemIndex2, null);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //формируем таблицу для вывода дерева
+        String[][] printArr = initTablePrint(maxWordInLine, getCountItem(allItemsListTree.size()), allItemsListTree.size());
+
+        //заполняем элементы дерева в таблицу для вывода
+        for (int row = 0; row < allItemsListTree.size(); row++) {
+            List<TreeNode<T>> itemsInRow = allItemsListTree.get(row);
+            Point tmp = getItemStep(row, allItemsListTree.size());
+            int start = tmp.x;
+            int step = tmp.y;
+            int maxWordColumn = maxWordInLine.get(row);
+
+            for (int ind = 0; ind < itemsInRow.size(); ind++) {
+                int x = row;
+                int y = (ind == 0) ? start : ind * step + start;
+                TreeNode<T> treeView = itemsInRow.get(ind);
+                String value = null;
+                if (treeView != null) {
+                    T item = treeView.getItem();
+                    value = (treeNodeViewable != null ? treeNodeViewable.getValueView(item) : item.toString());
+                    if (maxWordColumn - value.length() > 0) {
+                        value += String.format("%" + (maxWordColumn - value.length()) + "s", "").replace(" ", "-");
+                    }
+                }
+
+                if (value == null) {
+                    value = "•- " + String.format("%" + (maxWordColumn +2) + "s", "").replace(" ", "-");
+                } else {
+                    value = "•- " + value + " -" ;
+                }
+                printArr[y][x] = value;
+            }
+        }
+
+        for (int row = 0; row < printArr.length; row++) {
+            for (int column = 0; column < printArr[row].length; column++) {
+                System.out.print(printArr[row][column]);
+            }
+            System.out.println();
+        }
+    }
+    private void setItemOnLevels(TreeNode<T> rootNode, int level, Integer rootL, Integer rootR) {
+        if (rootNode == null) {
+            return;
+        }
+        if (level > allItemsListTree.size()-1) {
+            allItemsListTree.add(new ArrayList<>());
+        }
+        List<TreeNode<T>> itemsOnLevelTree = allItemsListTree.get(level);
+
+        TreeNode<T> leftNode = null;
+        if (rootNode.getLeftChild() != null) {
+            leftNode = rootNode.getLeftChild();
+            itemsOnLevelTree.add(leftNode);
+        }
+        TreeNode<T> rightNode = null;
+        if (rootNode.getRightChild() != null) {
+            rightNode = rootNode.getRightChild();
+            itemsOnLevelTree.add(rightNode);
+        }
+        allItemsListTree.set(level, itemsOnLevelTree);
+        if (leftNode != null) setItemOnLevels(leftNode, level+1, leftNode.getTreeIndex(), null);
+        if (rightNode != null) setItemOnLevels(rightNode, level+1, null, rightNode.getTreeIndex());
+    }
+
+    //получить максимально возможно число элементов на конкретном уровне дерева
+    private int getCountItem(int row) {
+        if (row == 1) return 1;
+        return 2 * getCountItem(row -1);
+    }
+
+    //получить первую позицию для отображение элемента и шаг до следующей позиции
+    private Point getItemStep(int currentColumn, int maxColumn) {
+        int maxRow = getCountItem(maxColumn +1) - 2; //максимально число строк для отображения
+        int delta = maxColumn - currentColumn - 1;
+        int start = maxRow - getCountItem(delta +1) + 1;
+        int step = - getCountItem(delta +2);
+        return new Point(start, step);
+    }
+
+    //проинизиализировать массив, содержащий таблицу для вывода дерева
+    private String[][] initTablePrint(List<Integer> maxWordInLine, int cntRow, int cntColumn) {
+        int allCntRow = cntRow*2 - 1;
+        String[][] result = new String[allCntRow][cntColumn];
+
+        for (int row = 0; row < allCntRow; row++) {
+            for (int column = 0; column < cntColumn; column++) {
+                int maxWord = maxWordInLine.get(column);
+                Point tmp = getItemStep(column, cntColumn);
+                int start = tmp.x;
+                int step = tmp.y;
+                String value;
+                if (row == start || row % step == start % step) {
+                    value = ""; //тут будет значение дерева
+                } else if (row > start || row < allCntRow - start) {
+                    value = String.format("%" + (maxWord +5) + "s", "");
+                } else {
+                    value = "|" + String.format("%" + (maxWord + 4) + "s", "");
+                }
+                result[row][column] = value;
+            }
+        }
+
+        for (int column = 0; column < cntColumn; column++) {
+            int cntItem = 0;
+            int maxWord = maxWordInLine.get(column);
+            for (int row = 0; row < allCntRow; row++) {
+                if  (result[row][column].equals("")) {
+                    cntItem++;
+                }
+                if (result[row][column].contains("|") && cntItem % 2 == 0) {
+                    result[row][column] = String.format("%" + (maxWord +5) + "s", "");
+                }
+            }
+        }
+
+        return result;
+    }
 }

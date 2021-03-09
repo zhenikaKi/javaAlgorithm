@@ -45,4 +45,8 @@ public class Human implements Comparable<Human> {
     public String toString() {
         return firstName + " " + name + (secondName == null ? "" : " " + secondName);
     }
+
+    public String getShortString() {
+        return firstName + " " + name.substring(0, 1) + "." + (secondName == null ? "" : " " + secondName.substring(0, 1) + ".");
+    }
 }

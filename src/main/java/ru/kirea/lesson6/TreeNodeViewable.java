@@ -1,5 +1,5 @@
 package ru.kirea.lesson6;
 
-public abstract class TreeNodeViewable<T> {
-    abstract String getValueView();
+public interface TreeNodeViewable<T> {
+    String getValueView(T item);
 }
