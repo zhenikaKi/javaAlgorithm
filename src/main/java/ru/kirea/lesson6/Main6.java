@@ -64,5 +64,15 @@ public class Main6 {
         System.out.println("Обратный обход дерева");
         treeHumans.reverseView();
         System.out.println();
+
+        //6.5
+        System.out.println("Удаление левого элемента");
+        treeHumans.delete(new Human("Петров", "Константин"));
+        System.out.println("Удаление правого элемента");
+        treeHumans.delete(new Human("Смирнов", "Петр", "Петрович"));
+        System.out.println("Удаление элемента с дочерними элементами");
+        treeHumans.delete(new Human("Сидорова", "Наталья", "Викторовна"));
+        treeHumans.symmetricView();
+        System.out.println();
     }
 }

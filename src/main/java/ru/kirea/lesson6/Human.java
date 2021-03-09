@@ -2,7 +2,7 @@ package ru.kirea.lesson6;
 
 import java.util.Objects;
 
-public class Human implements Comparable<Human> {
+public class Human extends TreeNodeViewable implements Comparable<Human> {
     private String firstName;
     private String name;
     private String secondName;
@@ -22,7 +22,7 @@ public class Human implements Comparable<Human> {
     public int compareTo(Human h) {
         int result = this.firstName.compareTo(h.firstName); //сравниваем сперва по фамилии
         if (result == 0) result = this.name.compareTo(h.name); //затем по имени
-        if (result == 0) result = this.secondName.compareTo(h.secondName); //затем по отчеству
+        if (result == 0 && h.secondName != null) result = this.secondName.compareTo(h.secondName); //затем по отчеству
         return result;
     }
 
@@ -44,5 +44,10 @@ public class Human implements Comparable<Human> {
     @Override
     public String toString() {
         return firstName + " " + name + (secondName == null ? "" : " " + secondName);
+    }
+
+    @Override
+    public String getValueView() {
+        return firstName + " " + name.substring(0, 1) + "." + (secondName == null ? "" : " " + secondName.substring(0, 1) + ".");
     }
 }
