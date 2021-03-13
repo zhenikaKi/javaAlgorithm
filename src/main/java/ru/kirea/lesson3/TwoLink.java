@@ -49,6 +49,28 @@ public class TwoLink<T> implements Iterator<T> {
         item = addedItem;
     }
 
+    public TwoLinkItem<T> addFirst(T newItem) {
+        TwoLinkItem<T> firstItem = item;
+        TwoLinkItem<T> prevItem = firstItem != null ? firstItem.getPrevItem() : null;
+        while (prevItem != null) {
+            firstItem = prevItem;
+            prevItem = firstItem.getPrevItem();
+        }
+
+        TwoLinkItem<T> addedItem = new TwoLinkItem<>(newItem);
+        if (firstItem != null) {
+            addedItem.setNextItem(firstItem);
+            firstItem.setPrevItem(addedItem);
+        } else { //добавляется самый первый элемент
+            item.setNextItem(addedItem);
+            addedItem.setPrevItem(item);
+            item = addedItem;
+        }
+
+        return addedItem;
+    }
+
+    //найти элемент
     public TwoLinkItem<T> findItem(T findItem) {
         TwoLinkItem<T> curItem = item;
         TwoLinkItem<T> result = null;
@@ -65,8 +87,28 @@ public class TwoLink<T> implements Iterator<T> {
         return result;
     }
 
+    //найти элемент с учетом ссылки на предыдуий и следующий элементы
+    public TwoLinkItem<T> findItem(TwoLinkItem<T> findItem) {
+        TwoLinkItem<T> curItem = item;
+        TwoLinkItem<T> result = null;
+        while (curItem != null) {
+            if (findItem.equals(curItem)) {
+                result = curItem;
+                break;
+            } else if (curItem.getNextItem() != null && findItem.equals(curItem.getNextItem())) {
+                result = curItem.getNextItem();
+                break;
+            };
+            curItem = curItem.getPrevItem();
+        }
+        return result;
+    }
+
     public void remove(TwoLinkItem<T> findItem) {
-        TwoLinkItem<T> deletedItem = findItem(findItem.getItem());
+        remove(findItem, true);
+    }
+    public void remove(TwoLinkItem<T> findItem, boolean noCheckPrevAndNextItem) {
+        TwoLinkItem<T> deletedItem = noCheckPrevAndNextItem ? findItem(findItem.getItem()) : findItem(findItem);
         if (deletedItem != null) {
             TwoLinkItem<T> prev = deletedItem.getPrevItem();
             TwoLinkItem<T> next = deletedItem.getNextItem();
@@ -90,5 +132,9 @@ public class TwoLink<T> implements Iterator<T> {
     //задание 3.5
     public Iterator<T> iterator() {
         return this;
+    }
+
+    public TwoLinkItem<T> getItem() {
+        return item;
     }
 }
