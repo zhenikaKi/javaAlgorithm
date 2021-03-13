@@ -5,10 +5,16 @@ public class HashTable {
     private int arrSize;
     private HashTableItem nonItem;
 
+    private int tableSize;
+    private int hashCoefficient;
+
     public HashTable(int arrSize) {
         this.arrSize = arrSize;
         hashArr = new HashTableItem[arrSize];
         nonItem = new HashTableItem(-1);
+
+        tableSize = getPrime(arrSize);
+        hashCoefficient = tableSize % 10;
     }
 
     //вывести ключи
@@ -25,7 +31,7 @@ public class HashTable {
     }
 
     private int hashFuncDouble(int key) {
-        return 5 - key % 5;
+        return hashCoefficient - key % hashCoefficient;
     }
 
     //добавление значения
