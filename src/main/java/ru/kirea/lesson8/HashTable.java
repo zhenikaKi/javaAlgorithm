@@ -1,8 +1,5 @@
 package ru.kirea.lesson8;
 
-import javax.print.DocFlavor;
-import java.util.Arrays;
-
 public class HashTable {
     private HashTableItem[] hashArr;
     private int arrSize;
