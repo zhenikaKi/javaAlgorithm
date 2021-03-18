@@ -1,5 +1,7 @@
 package ru.kirea.lesson3;
 
+import java.util.Objects;
+
 public class TwoLinkItem<T> {
     private T item;
     private TwoLinkItem<T> prevItem;
@@ -27,6 +29,21 @@ public class TwoLinkItem<T> {
 
     public T getItem() {
         return item;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TwoLinkItem<?> that = (TwoLinkItem<?>) o;
+        return Objects.equals(item, that.item) &&
+                Objects.equals(prevItem, that.prevItem) &&
+                Objects.equals(nextItem, that.nextItem);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(item, prevItem, nextItem);
     }
 
     @Override
